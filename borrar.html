@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Computer Repair Application</title>
+</head>
+<body>
+    <!-- Login Page -->
+    <div id="loginPage">
+        <h2>Login</h2>
+        <form id="loginForm">
+            <label for="username">Username:</label>
+            <input type="text" id="username" required><br><br>
+            <label for="password">Password:</label>
+            <input type="password" id="password" required><br><br>
+            <button type="submit">Login</button>
+        </form>
+    </div>
+
+    <!-- Technician Dashboard -->
+    <div id="dashboard" style="display: none;">
+        <h2>Technician Dashboard</h2>
+        <button onclick="logout()">Logout</button><br><br>
+
+        <h3>Create New Ticket</h3>
+        <form id="newTicketForm">
+            <label for="issue">Issue:</label>
+            <input type="text" id="issue" required><br><br>
+            <button type="submit">Create Ticket</button>
+        </form><br>
+
+        <h3>Pending Fixings</h3>
+        <select id="pendingFixings">
+            <!-- Options will be populated dynamically -->
+        </select><br><br>
+
+        <h3>Update Records</h3>
+        <form id="updateRecordsForm">
+            <label for="status">Status:</label>
+            <input type="text" id="status" required><br><br>
+            <input type="file" id="photo" accept="image/*"><br><br>
+            <button type="submit">Update Records</button>
+        </form>
+
+        <div id="qrCode">
+            <!-- QR Code for customer access will be displayed here -->
+        </div>
+    </div>
+
+    <script>
+        // Function to populate pending fixings dropdown
+        function populatePendingFixings() {
+            // This part needs to be implemented
+        }
+
+        // Function to simulate login (dummy)
+        document.getElementById("loginForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            document.getElementById("loginPage").style.display = "none";
+            document.getElementById("dashboard").style.display = "block";
+            populatePendingFixings();
+        });
+
+        // Function to simulate logout (dummy)
+        function logout() {
+            document.getElementById("loginPage").style.display = "block";
+            document.getElementById("dashboard").style.display = "none";
+        }
+
+        // Function to handle form submission for creating a new ticket
+        document.getElementById("newTicketForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            const issue = document.getElementById("issue").value;
+            // AJAX request to create new ticket
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", "backend.php", true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    console.log(xhr.responseText);
+                    // Repopulate pending fixings dropdown
+                    populatePendingFixings();
+                    document.getElementById("issue").value = "";
+                }
+            };
+            xhr.send("action=createTicket&issue=" + issue);
+        });
+
+        // Function to handle form submission for updating records
+        document.getElementById("updateRecordsForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            const status = document.getElementById("status").value;
+            const photo = document.getElementById("photo").files[0];
+            const fixingId = document.getElementById("pendingFixings").value;
+            // AJAX request to update records
+            const formData = new FormData();
+            formData.append("action", "updateRecords");
+            formData.append("id", fixingId);
+            formData.append("status", status);
+            formData.append("photo", photo);
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", "backend.php", true);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    console.log(xhr.responseText);
+                    // Generate and display QR code for customer access
+                    document.getElementById("qrCode").innerHTML = "<img src='https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=customer_access_link'>";
+                    document.getElementById("status").value = "";
+                    document.getElementById("photo").value = "";
+                }
+            };
+            xhr.send(formData);
+        });
+    </script>
+</body>
+</html>
